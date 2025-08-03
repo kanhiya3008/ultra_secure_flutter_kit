@@ -33,6 +33,7 @@ enum SecurityThreatType {
   mitmAttackDetected,
   certificateMismatch,
   biometricBypassDetected,
+  usbCableAttached, // New USB cable detection threat
 }
 
 /// Device risk factors
@@ -406,8 +407,10 @@ class DeviceSecurityStatus {
   final bool isBiometricAvailable;
   final bool isCodeObfuscated;
   final bool isDeveloperModeEnabled;
-  final List<SecurityThreat> activeThreats;
+  final bool isUsbCableAttached; // New USB cable status
   final double riskScore;
+  final bool isSecure;
+  final List<SecurityThreat> activeThreats;
 
   const DeviceSecurityStatus({
     required this.isRooted,
@@ -421,11 +424,35 @@ class DeviceSecurityStatus {
     required this.isBiometricAvailable,
     required this.isCodeObfuscated,
     required this.isDeveloperModeEnabled,
-    required this.activeThreats,
+    required this.isUsbCableAttached, // New field
     required this.riskScore,
+    required this.isSecure,
+    required this.activeThreats,
   });
 
-  bool get isSecure => riskScore < 0.3 && activeThreats.isEmpty;
+  factory DeviceSecurityStatus.fromJson(Map<String, dynamic> json) {
+    return DeviceSecurityStatus(
+      isRooted: json['isRooted'] ?? false,
+      isJailbroken: json['isJailbroken'] ?? false,
+      isEmulator: json['isEmulator'] ?? false,
+      isDebuggerAttached: json['isDebuggerAttached'] ?? false,
+      hasProxy: json['hasProxy'] ?? false,
+      hasVPN: json['hasVPN'] ?? false,
+      isScreenCaptureBlocked: json['isScreenCaptureBlocked'] ?? false,
+      isSSLValid: json['isSSLValid'] ?? false,
+      isBiometricAvailable: json['isBiometricAvailable'] ?? false,
+      isCodeObfuscated: json['isCodeObfuscated'] ?? false,
+      isDeveloperModeEnabled: json['isDeveloperModeEnabled'] ?? false,
+      isUsbCableAttached: json['isUsbCableAttached'] ?? false, // New field
+      riskScore: (json['riskScore'] ?? 0.0).toDouble(),
+      isSecure: json['isSecure'] ?? false,
+      activeThreats:
+          (json['activeThreats'] as List<dynamic>?)
+              ?.map((e) => SecurityThreat.fromJson(e))
+              .toList() ??
+          [],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -440,10 +467,50 @@ class DeviceSecurityStatus {
       'isBiometricAvailable': isBiometricAvailable,
       'isCodeObfuscated': isCodeObfuscated,
       'isDeveloperModeEnabled': isDeveloperModeEnabled,
-      'activeThreats': activeThreats.map((t) => t.toJson()).toList(),
+      'isUsbCableAttached': isUsbCableAttached, // New field
       'riskScore': riskScore,
       'isSecure': isSecure,
+      'activeThreats': activeThreats.map((e) => e.toJson()).toList(),
     };
+  }
+
+  DeviceSecurityStatus copyWith({
+    bool? isRooted,
+    bool? isJailbroken,
+    bool? isEmulator,
+    bool? isDebuggerAttached,
+    bool? hasProxy,
+    bool? hasVPN,
+    bool? isScreenCaptureBlocked,
+    bool? isSSLValid,
+    bool? isBiometricAvailable,
+    bool? isCodeObfuscated,
+    bool? isDeveloperModeEnabled,
+    bool? isUsbCableAttached, // New field
+    double? riskScore,
+    bool? isSecure,
+    List<SecurityThreat>? activeThreats,
+  }) {
+    return DeviceSecurityStatus(
+      isRooted: isRooted ?? this.isRooted,
+      isJailbroken: isJailbroken ?? this.isJailbroken,
+      isEmulator: isEmulator ?? this.isEmulator,
+      isDebuggerAttached: isDebuggerAttached ?? this.isDebuggerAttached,
+      hasProxy: hasProxy ?? this.hasProxy,
+      hasVPN: hasVPN ?? this.hasVPN,
+      isScreenCaptureBlocked:
+          isScreenCaptureBlocked ?? this.isScreenCaptureBlocked,
+      isSSLValid: isSSLValid ?? this.isSSLValid,
+      isBiometricAvailable: isBiometricAvailable ?? this.isBiometricAvailable,
+      isCodeObfuscated: isCodeObfuscated ?? this.isCodeObfuscated,
+      isDeveloperModeEnabled:
+          isDeveloperModeEnabled ?? this.isDeveloperModeEnabled,
+      isUsbCableAttached:
+          isUsbCableAttached ?? this.isUsbCableAttached, // New field
+      riskScore: riskScore ?? this.riskScore,
+      isSecure: isSecure ?? this.isSecure,
+      activeThreats: activeThreats ?? this.activeThreats,
+    );
   }
 }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ultra_secure_flutter_kit/ultra_secure_flutter_kit.dart';
+import 'package:ultra_secure_flutter_kit_example/platform_examples/platform_examples_main.dart';
 
 class PluginTest extends StatefulWidget {
   const PluginTest({super.key});
@@ -82,6 +83,37 @@ class _PluginTestState extends State<PluginTest> {
       results.add('❌ Device fingerprint failed: $e');
     }
 
+    try {
+      // Test 8: USB cable detection
+      final isUsbAttached = await _securityKit.isUsbCableAttached();
+      results.add('✅ USB cable detection: $isUsbAttached');
+    } catch (e) {
+      results.add('❌ USB cable detection failed: $e');
+    }
+
+    try {
+      // Test 9: USB connection status
+      final usbStatus = await _securityKit.getUsbConnectionStatus();
+      results.add('✅ USB connection status: ${usbStatus['connectionType'] ?? 'unknown'}');
+      results.add('   📊 Details:');
+      results.add('   • Is Attached: ${usbStatus['isAttached'] ?? false}');
+      results.add('   • Is Charging: ${usbStatus['isCharging'] ?? false}');
+      results.add('   • USB Charging: ${usbStatus['isUsbCharging'] ?? false}');
+      results.add('   • Data Transfer: ${usbStatus['isDataTransfer'] ?? false}');
+      results.add('   • Connected to Computer: ${usbStatus['isConnectedToComputer'] ?? false}');
+      results.add('   • Connected via USB: ${usbStatus['isConnectedViaUsb'] ?? false}');
+      results.add('   • Power Source: ${usbStatus['powerSource'] ?? 'unknown'}');
+      results.add('   • Device Count: ${usbStatus['deviceCount'] ?? 0}');
+      if (usbStatus['timestamp'] != null) {
+        results.add('   • Timestamp: ${DateTime.fromMillisecondsSinceEpoch(usbStatus['timestamp'] as int)}');
+      }
+      if (usbStatus['error'] != null) {
+        results.add('   • Error: ${usbStatus['error']}');
+      }
+    } catch (e) {
+      results.add('❌ USB connection status failed: $e');
+    }
+
     setState(() {
       _testResults = results.join('\n');
     });
@@ -90,7 +122,23 @@ class _PluginTestState extends State<PluginTest> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Plugin Test Results')),
+      appBar: AppBar(
+        title: const Text('Plugin Test Results'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.security),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PlatformExamplesMain(),
+                ),
+              );
+            },
+            tooltip: 'Platform Security Examples',
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

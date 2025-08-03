@@ -60,6 +60,59 @@ class MethodChannelUltraSecureFlutterKit extends UltraSecureFlutterKitPlatform {
   }
 
   @override
+  Future<bool> isUsbCableAttached() async {
+    final result = await methodChannel.invokeMethod<bool>('isUsbCableAttached');
+    return result ?? false;
+  }
+
+  @override
+  Future<Map<String, dynamic>> getUsbConnectionStatus() async {
+    try {
+      final result = await methodChannel.invokeMethod<dynamic>(
+        'getUsbConnectionStatus',
+      );
+      
+      print('USB Connection Status Result Type: ${result.runtimeType}');
+      print('USB Connection Status Result: $result');
+      
+      // Handle type conversion from platform-specific implementations
+      if (result is Map) {
+        // Convert the map to the expected type with proper type safety
+        final Map<String, dynamic> convertedMap = <String, dynamic>{};
+        result.forEach((key, value) {
+          final String stringKey = key is String ? key : key.toString();
+          convertedMap[stringKey] = value;
+        });
+        print('Converted Map: $convertedMap');
+        return convertedMap;
+      }
+      
+      print('Result is not a Map, returning default values');
+      return _getDefaultUsbStatus('Invalid response type: ${result.runtimeType}');
+    } catch (e) {
+      print('Error in getUsbConnectionStatus: $e');
+      return _getDefaultUsbStatus('Exception: $e');
+    }
+  }
+
+  /// Helper method to create default USB status
+  Map<String, dynamic> _getDefaultUsbStatus(String error) {
+    return <String, dynamic>{
+      'isAttached': false,
+      'connectionType': 'none',
+      'isCharging': false,
+      'isDataTransfer': false,
+      'isUsbCharging': false,
+      'isConnectedToComputer': false,
+      'isConnectedViaUsb': false,
+      'deviceCount': 0,
+      'powerSource': 'none',
+      'error': error,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+  }
+
+  @override
   Future<String> getAppSignature() async {
     final result = await methodChannel.invokeMethod<String>('getAppSignature');
     return result ?? '';
@@ -135,5 +188,24 @@ class MethodChannelUltraSecureFlutterKit extends UltraSecureFlutterKitPlatform {
       'getUnexpectedCertificates',
     );
     return result?.cast<String>() ?? [];
+  }
+
+  @override
+  Future<void> configureSSLPinning(
+    List<String> certificates,
+    List<String> publicKeys,
+  ) async {
+    await methodChannel.invokeMethod<void>('configureSSLPinning', {
+      'certificates': certificates,
+      'publicKeys': publicKeys,
+    });
+  }
+
+  @override
+  Future<bool> verifySSLPinning(String url) async {
+    final result = await methodChannel.invokeMethod<bool>('verifySSLPinning', {
+      'url': url,
+    });
+    return result ?? false;
   }
 }

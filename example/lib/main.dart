@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:ultra_secure_flutter_kit/ultra_secure_flutter_kit.dart';
 import 'package:ultra_secure_flutter_kit_example/security_example.dart';
 import 'package:ultra_secure_flutter_kit_example/plugin_test.dart';
+import 'package:ultra_secure_flutter_kit_example/platform_examples/platform_examples_main.dart';
+import 'package:ultra_secure_flutter_kit_example/main_navigation.dart';
+import 'package:ultra_secure_flutter_kit_example/network_error_handler.dart';
+import 'package:ultra_secure_flutter_kit_example/network_connectivity_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +22,29 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SecurityExample(),
+      home: NetworkConnectivityWidget(
+        onConnectionRestored: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Internet connection restored!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
+        onConnectionLost: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Internet connection lost'),
+              backgroundColor: Colors.orange,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
+        child: const MainNavigation(),
+      ),
+      // home: SecurityExample(),
+      // home: PlatformExamplesMain(),
       // home: PluginTest(),
       //   home: const MyHomePage(title: 'Ultra Secure Flutter Kit Demo'),
     );
@@ -448,6 +474,20 @@ Device Security Status:
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.security),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PlatformExamplesMain(),
+                ),
+              );
+            },
+            tooltip: 'Platform Security Examples',
+          ),
+        ],
       ),
       body: Stack(
         children: [

@@ -3,10 +3,12 @@ library ultra_secure_flutter_kit;
 export 'src/models/security_models.dart';
 export 'src/services/secure_monitor_service.dart';
 
-import 'package:ultra_secure_flutter_kit/ultra_secure_flutter_kit.dart';
-import 'dart:isolate';
+
+import 'package:local_auth/local_auth.dart' as local_auth;
 
 import 'ultra_secure_flutter_kit_platform_interface.dart';
+import 'src/models/security_models.dart';
+import 'src/services/secure_monitor_service.dart';
 
 /// Main class for Ultra Secure Flutter Kit
 ///
@@ -76,8 +78,10 @@ class UltraSecureFlutterKit {
         isBiometricAvailable: false,
         isCodeObfuscated: true,
         isDeveloperModeEnabled: false,
-        activeThreats: [],
+        isUsbCableAttached: false,
         riskScore: 0.0,
+        isSecure: true,
+        activeThreats: [],
       );
     }
   }
@@ -369,6 +373,49 @@ class UltraSecureFlutterKit {
     }
   }
 
+  /// Check if USB cable is attached
+  Future<bool> isUsbCableAttached() async {
+    try {
+      return await _runInBackground(() async {
+        return await UltraSecureFlutterKitPlatform.instance
+            .isUsbCableAttached();
+      });
+    } catch (e) {
+      print('USB cable detection failed: $e');
+      return false;
+    }
+  }
+
+  /// Get USB connection status details
+  Future<Map<String, dynamic>> getUsbConnectionStatus() async {
+    try {
+      print('Getting USB connection status...');
+      final result = await _runInBackground(() async {
+        return await UltraSecureFlutterKitPlatform.instance
+            .getUsbConnectionStatus();
+      });
+      print('USB connection status result: $result');
+      print('USB connection status result type: ${result.runtimeType}');
+      return result;
+    } catch (e) {
+      print('USB connection status retrieval failed: $e');
+      print('Error type: ${e.runtimeType}');
+      return {
+        'isAttached': false,
+        'connectionType': 'none',
+        'isCharging': false,
+        'isDataTransfer': false,
+        'isUsbCharging': false,
+        'isConnectedToComputer': false,
+        'isConnectedViaUsb': false,
+        'deviceCount': 0,
+        'powerSource': 'none',
+        'error': e.toString(),
+        'errorType': e.runtimeType.toString(),
+      };
+    }
+  }
+
   /// Get app signature
   Future<String> getAppSignature() async {
     try {
@@ -539,6 +586,96 @@ class UltraSecureFlutterKit {
     } catch (e) {
       print('Certificate retrieval failed: $e');
       return [];
+    }
+  }
+
+  /// Configure SSL pinning
+  Future<void> configureSSLPinning(
+    List<String> certificates,
+    List<String> publicKeys,
+  ) async {
+    try {
+      await _runInBackground(() async {
+        return await UltraSecureFlutterKitPlatform.instance.configureSSLPinning(
+          certificates,
+          publicKeys,
+        );
+      });
+    } catch (e) {
+      print('SSL pinning configuration failed: $e');
+      rethrow;
+    }
+  }
+
+  /// Verify SSL pinning for a URL
+  Future<bool> verifySSLPinning(String url) async {
+    try {
+      return await _runInBackground(() async {
+        return await UltraSecureFlutterKitPlatform.instance.verifySSLPinning(
+          url,
+        );
+      });
+    } catch (e) {
+      print('SSL pinning verification failed: $e');
+      return false;
+    }
+  }
+
+  /// Check if biometric authentication is available
+  Future<bool> isBiometricAvailable() async {
+    try {
+      final local_auth.LocalAuthentication localAuth =
+          local_auth.LocalAuthentication();
+      final bool canAuthenticateWithBiometrics =
+          await localAuth.canCheckBiometrics;
+      final bool canAuthenticate =
+          canAuthenticateWithBiometrics || await localAuth.isDeviceSupported();
+      return canAuthenticate;
+    } catch (e) {
+      print('Biometric availability check failed: $e');
+      return false;
+    }
+  }
+
+  /// Get available biometric types
+  Future<List<local_auth.BiometricType>> getAvailableBiometrics() async {
+    try {
+      final local_auth.LocalAuthentication localAuth =
+          local_auth.LocalAuthentication();
+      final List<local_auth.BiometricType> availableBiometrics = await localAuth
+          .getAvailableBiometrics();
+      return availableBiometrics;
+    } catch (e) {
+      print('Failed to get available biometrics: $e');
+      return [];
+    }
+  }
+
+  /// Authenticate with biometrics
+  Future<bool> authenticateWithBiometrics({
+    String localizedReason = 'Please authenticate to continue',
+    String? cancelButton = 'Cancel',
+    String? goToSettingsButton = 'Settings',
+    String? goToSettingsDescription = 'Please set up your biometrics',
+    bool stickyAuth = false,
+    bool useErrorDialogs = true,
+    bool biometricOnly = false,
+  }) async {
+    try {
+      final local_auth.LocalAuthentication localAuth =
+          local_auth.LocalAuthentication();
+      final bool didAuthenticate = await localAuth.authenticate(
+        localizedReason: localizedReason,
+        options: local_auth.AuthenticationOptions(
+          stickyAuth: stickyAuth,
+          biometricOnly: biometricOnly,
+          useErrorDialogs: useErrorDialogs,
+        ),
+      );
+      return didAuthenticate;
+    } catch (e) {
+      print('Biometric authentication failed: $e');
+      return false;
     }
   }
 

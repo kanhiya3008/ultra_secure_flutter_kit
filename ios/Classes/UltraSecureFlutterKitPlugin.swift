@@ -4,8 +4,13 @@ import Security
 import SystemConfiguration
 import Network
 import CommonCrypto
+import LocalAuthentication
+import ExternalAccessory
 
 public class UltraSecureFlutterKitPlugin: NSObject, FlutterPlugin {
+  private static var pinnedCertificates: Set<String> = []
+  private static var pinnedPublicKeys: Set<String> = []
+  
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "ultra_secure_flutter_kit", binaryMessenger: registrar.messenger())
     let instance = UltraSecureFlutterKitPlugin()
@@ -27,6 +32,15 @@ public class UltraSecureFlutterKitPlugin: NSObject, FlutterPlugin {
     case "enableScreenCaptureProtection":
       enableScreenCaptureProtection()
       result(nil)
+    case "disableScreenCaptureProtection":
+      disableScreenCaptureProtection()
+      result(nil)
+    case "isScreenCaptureBlocked":
+      result(isScreenCaptureBlocked())
+    case "isUsbCableAttached":
+      result(isUsbCableAttached())
+    case "getUsbConnectionStatus":
+      result(getUsbConnectionStatus())
     case "getAppSignature":
       result(getAppSignature())
     case "verifyAppIntegrity":
@@ -54,9 +68,120 @@ public class UltraSecureFlutterKitPlugin: NSObject, FlutterPlugin {
       result(hasVPNConnection())
     case "getUnexpectedCertificates":
       result(getUnexpectedCertificates())
+    case "isDeveloperModeEnabled":
+      result(isDeveloperModeEnabled())
+    case "openDeveloperOptionsSettings":
+      openDeveloperOptionsSettings()
+      result(nil)
+    case "configureSSLPinning":
+      let certificates = call.arguments as? [String] ?? []
+      let publicKeys = call.arguments as? [String] ?? []
+      configureSSLPinning(certificates: certificates, publicKeys: publicKeys)
+      result(nil)
+    case "verifySSLPinning":
+      let url = call.arguments as? String ?? ""
+      result(verifySSLPinning(url: url))
     default:
       result(FlutterMethodNotImplemented)
     }
+  }
+
+  // MARK: - SSL Pinning Configuration
+  private func configureSSLPinning(certificates: [String], publicKeys: [String]) {
+    UltraSecureFlutterKitPlugin.pinnedCertificates.removeAll()
+    UltraSecureFlutterKitPlugin.pinnedPublicKeys.removeAll()
+    
+    UltraSecureFlutterKitPlugin.pinnedCertificates.formUnion(certificates)
+    UltraSecureFlutterKitPlugin.pinnedPublicKeys.formUnion(publicKeys)
+    
+    print("Security: SSL Pinning configured with \(certificates.count) certificates and \(publicKeys.count) public keys")
+  }
+
+  // MARK: - SSL Pinning Verification
+  private func verifySSLPinning(url: String) -> Bool {
+    guard let urlObj = URL(string: url) else {
+      print("Security: Invalid URL for SSL pinning verification")
+      return false
+    }
+    
+    let session = URLSession(configuration: .default)
+    let semaphore = DispatchSemaphore(value: 0)
+    var isPinned = false
+    
+    let task = session.dataTask(with: urlObj) { data, response, error in
+      defer { semaphore.signal() }
+      
+      if let httpResponse = response as? HTTPURLResponse,
+         let serverTrust = httpResponse.url?.host {
+        
+        // Get the certificate chain
+        if let trust = SecTrustCreateWithCertificates(nil, nil) {
+          let certCount = SecTrustGetCertificateCount(trust)
+          
+          for i in 0..<certCount {
+            if let cert = SecTrustGetCertificateAtIndex(trust, i) {
+              // Check certificate pinning
+              let certHash = self.getCertificateHash(cert: cert)
+              if UltraSecureFlutterKitPlugin.pinnedCertificates.contains(certHash) {
+                print("Security: Certificate pinning verification successful")
+                isPinned = true
+                break
+              }
+              
+              // Check public key pinning
+              let publicKeyHash = self.getPublicKeyHash(cert: cert)
+              if UltraSecureFlutterKitPlugin.pinnedPublicKeys.contains(publicKeyHash) {
+                print("Security: Public key pinning verification successful")
+                isPinned = true
+                break
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    task.resume()
+    _ = semaphore.wait(timeout: .now() + 10.0)
+    
+    if !isPinned {
+      print("Security: SSL pinning verification failed")
+    }
+    
+    return isPinned
+  }
+
+  private func getCertificateHash(cert: SecCertificate) -> String {
+    let certData = SecCertificateCopyData(cert) as Data
+    var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+    certData.withUnsafeBytes { buffer in
+      _ = CC_SHA256(buffer.baseAddress, CC_LONG(certData.count), &hash)
+    }
+    return Data(hash).base64EncodedString()
+  }
+
+  private func getPublicKeyHash(cert: SecCertificate) -> String {
+    // Extract public key from certificate
+    let policy = SecPolicyCreateBasicX509()
+    var trust: SecTrust?
+    let status = SecTrustCreateWithCertificates(cert, policy, &trust)
+    
+    guard status == errSecSuccess, let trust = trust else {
+      return ""
+    }
+    
+    if let publicKey = SecTrustCopyPublicKey(trust) {
+      let publicKeyData = SecKeyCopyExternalRepresentation(publicKey, nil) as? Data
+      if let data = publicKeyData {
+        var hash = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        data.withUnsafeBytes { buffer in
+          _ = CC_SHA256(buffer.baseAddress, CC_LONG(data.count), &hash)
+        }
+        return Data(hash).base64EncodedString()
+      }
+    }
+    
+    return ""
   }
 
   // MARK: - Jailbreak Detection
@@ -156,9 +281,56 @@ public class UltraSecureFlutterKitPlugin: NSObject, FlutterPlugin {
 
   // MARK: - Screen Capture Protection
   private func enableScreenCaptureProtection() {
-    // This would typically be implemented in the view controller
-    // For now, we'll just log the request
-    print("Security: Screen capture protection requested")
+    // Set a flag in UserDefaults to indicate screenshot blocking should be enabled
+    UserDefaults.standard.set(true, forKey: "screenshot_blocking_enabled")
+    
+    // Post notification to inform view controllers to enable screen capture protection
+    NotificationCenter.default.post(name: NSNotification.Name("EnableScreenCaptureProtection"), object: nil)
+    
+    print("Security: Screen capture protection enabled")
+  }
+
+  private func disableScreenCaptureProtection() {
+    // Set a flag in UserDefaults to indicate screenshot blocking should be disabled
+    UserDefaults.standard.set(false, forKey: "screenshot_blocking_enabled")
+    
+    // Post notification to inform view controllers to disable screen capture protection
+    NotificationCenter.default.post(name: NSNotification.Name("DisableScreenCaptureProtection"), object: nil)
+    
+    print("Security: Screen capture protection disabled")
+  }
+
+  private func isScreenCaptureBlocked() -> Bool {
+    return UserDefaults.standard.bool(forKey: "screenshot_blocking_enabled")
+  }
+
+  // MARK: - Developer Mode Detection (iOS)
+  private func isDeveloperModeEnabled() -> Bool {
+    // On iOS, check if the app is running in debug mode or if developer options are available
+    #if DEBUG
+      return true
+    #else
+      // Check for developer certificates
+      if let bundleIdentifier = Bundle.main.bundleIdentifier {
+        // Check if app is signed with development certificate
+        let isDevelopmentBuild = bundleIdentifier.contains("development") || 
+                                bundleIdentifier.contains("debug") ||
+                                bundleIdentifier.contains("test")
+        return isDevelopmentBuild
+      }
+      return false
+    #endif
+  }
+
+  // MARK: - Open Developer Options Settings (iOS)
+  private func openDeveloperOptionsSettings() {
+    // On iOS, we can't directly open developer options, but we can open general settings
+    if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+      if UIApplication.shared.canOpenURL(settingsUrl) {
+        UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
+        print("Security: Opened iOS Settings")
+      }
+    }
   }
 
   // MARK: - App Signature Verification
@@ -371,6 +543,73 @@ public class UltraSecureFlutterKitPlugin: NSObject, FlutterPlugin {
     print("Security: Certificate validation requested")
     
     return unexpectedCerts
+  }
+
+  // MARK: - USB Cable Detection
+  private func isUsbCableAttached() -> Bool {
+    // On iOS, we can detect USB connection through various methods
+    // Note: iOS has limitations on USB detection compared to Android
+    
+    // Method 1: Check if device is connected to power (USB charging)
+    let device = UIDevice.current
+    device.isBatteryMonitoringEnabled = true
+    
+    let batteryState = device.batteryState
+    let isConnectedToPower = batteryState == .charging || batteryState == .full
+    
+    // Method 2: Check if device is connected to computer (limited on iOS)
+    // iOS doesn't provide direct access to USB connection status like Android
+    // but we can infer from certain conditions
+    
+    // Method 3: Check for external accessory connections (if available)
+    let hasExternalAccessories = EAAccessoryManager.shared().connectedAccessories.count > 0
+    
+    print("Security: USB detection - Battery state: \(batteryState.rawValue), Connected to power: \(isConnectedToPower), External accessories: \(hasExternalAccessories)")
+    
+    // On iOS, we primarily rely on battery charging status as a proxy for USB connection
+    return isConnectedToPower || hasExternalAccessories
+  }
+
+  private func getUsbConnectionStatus() -> [String: Any] {
+    let device = UIDevice.current
+    device.isBatteryMonitoringEnabled = true
+    
+    let batteryState = device.batteryState
+    let isCharging = batteryState == .charging || batteryState == .full
+    let isConnectedToPower = isCharging
+    
+    // Check for external accessories
+    let externalAccessories = EAAccessoryManager.shared().connectedAccessories
+    let hasExternalAccessories = externalAccessories.count > 0
+    
+    // Determine connection type
+    let connectionType: String
+    if hasExternalAccessories {
+      connectionType = "external_accessory"
+    } else if isConnectedToPower {
+      connectionType = "charging"
+    } else {
+      connectionType = "none"
+    }
+    
+    let isAttached = isConnectedToPower || hasExternalAccessories
+    
+    let status: [String: Any] = [
+      "isAttached": isAttached,
+      "connectionType": connectionType,
+      "isCharging": isCharging,
+      "isDataTransfer": hasExternalAccessories,
+      "isUsbCharging": isConnectedToPower,
+      "isConnectedToComputer": false, // iOS doesn't provide this information
+      "isConnectedViaUsb": isConnectedToPower,
+      "deviceCount": externalAccessories.count,
+      "powerSource": isConnectedToPower ? "usb" : "none",
+      "batteryState": batteryState.rawValue,
+      "timestamp": Int(Date().timeIntervalSince1970 * 1000)
+    ] as [String: Any]
+    
+    print("Security: USB connection status: \(status)")
+    return status
   }
 
   // MARK: - Helper Methods

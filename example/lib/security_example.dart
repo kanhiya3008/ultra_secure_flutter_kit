@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ultra_secure_flutter_kit/ultra_secure_flutter_kit.dart';
+import 'package:ultra_secure_flutter_kit_example/platform_examples/platform_examples_main.dart';
 
 /// Comprehensive example demonstrating all security features
 class SecurityExample extends StatefulWidget {
@@ -391,6 +392,20 @@ class _SecurityExampleState extends State<SecurityExample> {
       appBar: AppBar(
         title: Text('Ultra Secure Flutter Kit Demo'),
         backgroundColor: _isInitialized ? Colors.green : Colors.orange,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.security),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PlatformExamplesMain(),
+                ),
+              );
+            },
+            tooltip: 'Platform Security Examples',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),

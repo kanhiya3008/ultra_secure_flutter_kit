@@ -9,6 +9,11 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   
+  <!-- USB detection permissions -->
+  <uses-permission android:name="android.permission.USB_PERMISSION" />
+  <uses-feature android:name="android.hardware.usb.host" android:required="false" />
+  <uses-feature android:name="android.hardware.usb.accessory" android:required="false" />
+  
   <application>
     <!-- Flutter plugin configuration -->
     <meta-data

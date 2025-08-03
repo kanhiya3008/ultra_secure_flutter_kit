@@ -63,6 +63,18 @@ abstract class UltraSecureFlutterKitPlatform extends PlatformInterface {
     );
   }
 
+  /// Check if USB cable is attached
+  Future<bool> isUsbCableAttached() {
+    throw UnimplementedError('isUsbCableAttached() has not been implemented.');
+  }
+
+  /// Get USB connection status details
+  Future<Map<String, dynamic>> getUsbConnectionStatus() {
+    throw UnimplementedError(
+      'getUsbConnectionStatus() has not been implemented.',
+    );
+  }
+
   Future<String> getAppSignature() {
     throw UnimplementedError('getAppSignature() has not been implemented.');
   }
@@ -127,5 +139,16 @@ abstract class UltraSecureFlutterKitPlatform extends PlatformInterface {
     throw UnimplementedError(
       'getUnexpectedCertificates() has not been implemented.',
     );
+  }
+
+  Future<void> configureSSLPinning(
+    List<String> certificates,
+    List<String> publicKeys,
+  ) {
+    throw UnimplementedError('configureSSLPinning() has not been implemented.');
+  }
+
+  Future<bool> verifySSLPinning(String url) {
+    throw UnimplementedError('verifySSLPinning() has not been implemented.');
   }
 }

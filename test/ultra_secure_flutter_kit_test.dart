@@ -32,6 +32,17 @@ class MockUltraSecureFlutterKitPlatform
   Future<bool> isScreenCaptureBlocked() => Future.value(false);
 
   @override
+  Future<bool> isUsbCableAttached() => Future.value(false);
+
+  @override
+  Future<Map<String, dynamic>> getUsbConnectionStatus() => Future.value({
+    'isAttached': false,
+    'connectionType': 'none',
+    'isCharging': false,
+    'isDataTransfer': false,
+  });
+
+  @override
   Future<String> getAppSignature() => Future.value('mock_signature');
 
   @override
@@ -63,6 +74,21 @@ class MockUltraSecureFlutterKitPlatform
 
   @override
   Future<List<String>> getUnexpectedCertificates() => Future.value([]);
+
+  @override
+  Future<bool> isDeveloperModeEnabled() => Future.value(false);
+
+  @override
+  Future<void> openDeveloperOptionsSettings() => Future.value();
+
+  @override
+  Future<void> configureSSLPinning(
+    List<String> certificates,
+    List<String> publicKeys,
+  ) => Future.value();
+
+  @override
+  Future<bool> verifySSLPinning(String url) => Future.value(true);
 }
 
 void main() {
@@ -80,5 +106,27 @@ void main() {
     UltraSecureFlutterKitPlatform.instance = fakePlatform;
 
     expect(await ultraSecureFlutterKitPlugin.getPlatformVersion(), '42');
+  });
+
+  test('isUsbCableAttached', () async {
+    UltraSecureFlutterKit ultraSecureFlutterKitPlugin = UltraSecureFlutterKit();
+    MockUltraSecureFlutterKitPlatform fakePlatform =
+        MockUltraSecureFlutterKitPlatform();
+    UltraSecureFlutterKitPlatform.instance = fakePlatform;
+
+    expect(await ultraSecureFlutterKitPlugin.isUsbCableAttached(), false);
+  });
+
+  test('getUsbConnectionStatus', () async {
+    UltraSecureFlutterKit ultraSecureFlutterKitPlugin = UltraSecureFlutterKit();
+    MockUltraSecureFlutterKitPlatform fakePlatform =
+        MockUltraSecureFlutterKitPlatform();
+    UltraSecureFlutterKitPlatform.instance = fakePlatform;
+
+    final status = await ultraSecureFlutterKitPlugin.getUsbConnectionStatus();
+    expect(status['isAttached'], false);
+    expect(status['connectionType'], 'none');
+    expect(status['isCharging'], false);
+    expect(status['isDataTransfer'], false);
   });
 }

@@ -83,7 +83,10 @@ class SecureMonitorService {
       _isProtected = true;
 
       _updateStatus(ProtectionStatus.protected);
-      _logSecurityEvent('secure_monitor initialized successfully', LogLevel.info);
+      _logSecurityEvent(
+        'secure_monitor initialized successfully',
+        LogLevel.info,
+      );
     } catch (e) {
       _logSecurityEvent(
         'secure_monitor initialization failed: $e',
@@ -428,6 +431,7 @@ class SecureMonitorService {
       final isScreenCaptureBlocked = _config?.enableScreenshotBlocking ?? false;
       final isSSLValid = await _checkSSLStatus();
       final isDeveloperModeEnabled = await _checkDeveloperModeStatus();
+      final isUsbCableAttached = await _checkUsbCableStatus();
 
       final riskScore = _calculateRiskScore(
         isRooted: isRooted,
@@ -451,8 +455,10 @@ class SecureMonitorService {
         isBiometricAvailable: _config?.enableBiometricAuth ?? false,
         isCodeObfuscated: _config?.enableCodeObfuscation ?? true,
         isDeveloperModeEnabled: isDeveloperModeEnabled,
-        activeThreats: List.from(_activeThreats),
+        isUsbCableAttached: isUsbCableAttached,
         riskScore: riskScore,
+        isSecure: riskScore < 0.3 && _activeThreats.isEmpty,
+        activeThreats: List.from(_activeThreats),
       );
     } catch (e) {
       _logSecurityEvent(
@@ -472,8 +478,10 @@ class SecureMonitorService {
         isBiometricAvailable: false,
         isCodeObfuscated: true,
         isDeveloperModeEnabled: false,
-        activeThreats: [],
+        isUsbCableAttached: false,
         riskScore: 0.0,
+        isSecure: true,
+        activeThreats: [],
       );
     }
   }
@@ -1025,8 +1033,8 @@ class SecureMonitorService {
 
   Future<bool> _checkVPNStatus() async {
     try {
-      // Check VPN status (placeholder)
-      return false;
+      // Call the native platform method to check VPN status
+      return await UltraSecureFlutterKitPlatform.instance.hasVPNConnection();
     } catch (e) {
       _logSecurityEvent('VPN status check failed: $e', LogLevel.error);
       return false;
@@ -1055,6 +1063,16 @@ class SecureMonitorService {
           .isDeveloperModeEnabled();
     } catch (e) {
       _logSecurityEvent('Developer mode check failed: $e', LogLevel.error);
+      return false;
+    }
+  }
+
+  Future<bool> _checkUsbCableStatus() async {
+    try {
+      // Call the native platform method to check USB cable status
+      return await UltraSecureFlutterKitPlatform.instance.isUsbCableAttached();
+    } catch (e) {
+      _logSecurityEvent('USB cable status check failed: $e', LogLevel.error);
       return false;
     }
   }

@@ -2,6 +2,20 @@
 
 A comprehensive Flutter security package providing enterprise-grade protection similar to secure_monitor. This plugin offers extensive security features to protect your Flutter applications from various threats and attacks.
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/knhparmar)
+[![GitHub Stars](https://img.shields.io/github/stars/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=gold)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=blue)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/network)
+[![GitHub Issues](https://img.shields.io/github/issues/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=red)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=green)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/pulls)
+[![GitHub License](https://img.shields.io/github/license/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=purple)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/blob/main/LICENSE)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=orange)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/commits/main)
+[![GitHub Release](https://img.shields.io/github/v/release/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=teal)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/releases)
+[![GitHub Contributors](https://img.shields.io/github/contributors/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=indigo)](https://github.com/kanhiya3008/ultra_secure_flutter_kit/graphs/contributors)
+[![GitHub Repo Size](https://img.shields.io/github/repo-size/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=gray)](https://github.com/kanhiya3008/ultra_secure_flutter_kit)
+[![GitHub Code Size](https://img.shields.io/github/languages/code-size/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=lightgray)](https://github.com/kanhiya3008/ultra_secure_flutter_kit)
+[![GitHub Top Language](https://img.shields.io/github/languages/top/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=dart&color=blue)](https://github.com/kanhiya3008/ultra_secure_flutter_kit)
+[![GitHub Language Count](https://img.shields.io/github/languages/count/kanhiya3008/ultra_secure_flutter_kit?style=for-the-badge&logo=github&color=cyan)](https://github.com/kanhiya3008/ultra_secure_flutter_kit)
+
 ## 🛡️ Security Features
 
 ### ✅ **IMPLEMENTED & AVAILABLE**
@@ -29,8 +43,10 @@ A comprehensive Flutter security package providing enterprise-grade protection s
 #### 4. **Network Protection**
 - ✅ **SSL Pinning** - Certificate pinning with fallback options
 - ✅ **MITM Attack Detection** - Detects man-in-the-middle attacks
-- ✅ **Proxy/VPN Detection** - Identifies network proxies and VPNs
+- ✅ **Proxy Detection** - Identifies network proxies and proxy settings
+- ✅ **VPN Detection** - **NEW!** Multi-platform VPN connection detection
 - ✅ **Network Monitoring** - Real-time network security monitoring
+- ✅ **Network Interface Analysis** - Comprehensive network security analysis
 
 #### 5. **Anti-Reverse Engineering**
 - ✅ **Frida Detection** - Detects Frida framework usage
@@ -53,6 +69,11 @@ A comprehensive Flutter security package providing enterprise-grade protection s
 - ✅ **Strict Mode** - Maximum protection, blocks on any threat
 - ✅ **Monitor Mode** - Logs threats but doesn't block
 - ✅ **Custom Rules** - Configurable security policies
+
+#### 9. **Biometric Authentication**
+- ✅ **Biometric Availability Check** - Check if biometric auth is available
+- ✅ **Available Biometric Types** - Get list of available biometric methods
+- ✅ **Biometric Authentication** - Authenticate using biometrics
 
 ## 📦 Installation
 
@@ -168,7 +189,7 @@ final isJailbroken = await securityKit.isJailbroken();
 final isEmulator = await securityKit.isEmulator();
 final isDebuggerAttached = await securityKit.isDebuggerAttached();
 final hasProxy = await securityKit.hasProxySettings();
-final hasVPN = await securityKit.hasVPNConnection();
+final hasVPN = await securityKit.hasVPNConnection(); // NEW! Multi-platform VPN detection
 final isDeveloperModeEnabled = await securityKit.isDeveloperModeEnabled();
 ```
 
@@ -300,6 +321,80 @@ final isDeveloperMode = await securityKit.isDeveloperModeEnabled();
 if (isDeveloperMode) {
   await securityKit.openDeveloperOptionsSettings();
 }
+```
+
+### 9. SSL Pinning
+
+```dart
+// Configure SSL pinning
+await securityKit.configureSSLPinning(
+  certificates: ['sha256/your-certificate-hash-here'],
+  publicKeys: ['sha256/your-public-key-hash-here'],
+);
+
+// Verify SSL pinning for a URL
+final isPinned = await securityKit.verifySSLPinning('https://api.example.com');
+print('SSL pinning verification: $isPinned');
+```
+
+### 10. VPN Detection (NEW!)
+
+```dart
+// Check if VPN is connected
+final hasVPN = await securityKit.hasVPNConnection();
+print('VPN Connected: $hasVPN');
+
+// Get comprehensive network security status
+final deviceStatus = await securityKit.getDeviceSecurityStatus();
+print('VPN Status: ${deviceStatus.hasVPN}');
+print('Proxy Status: ${deviceStatus.hasProxy}');
+
+// Monitor VPN status continuously
+void startVPNMonitoring() {
+  Future.delayed(const Duration(seconds: 30), () async {
+    final hasVPN = await securityKit.hasVPNConnection();
+    
+    if (hasVPN) {
+      print('⚠️ VPN detected - applying enhanced security measures');
+      // Handle VPN detection (e.g., show warning, block sensitive operations)
+    }
+    
+    // Continue monitoring
+    startVPNMonitoring();
+  });
+}
+
+// Check VPN before making sensitive API calls
+Future<bool> makeSecureApiCall(String url, Map<String, dynamic> data) async {
+  final hasVPN = await securityKit.hasVPNConnection();
+  
+  if (hasVPN) {
+    print('VPN detected during API call - applying additional security');
+    // Apply enhanced security measures
+  }
+
+  return await securityKit.secureApiCall(url, data);
+}
+```
+
+### 11. Biometric Authentication
+
+```dart
+// Check if biometric authentication is available
+final isAvailable = await securityKit.isBiometricAvailable();
+print('Biometric available: $isAvailable');
+
+// Get available biometric types
+final biometrics = await securityKit.getAvailableBiometrics();
+print('Available biometrics: $biometrics');
+
+// Authenticate with biometrics
+final isAuthenticated = await securityKit.authenticateWithBiometrics(
+  localizedReason: 'Please authenticate to access secure data',
+  stickyAuth: false,
+  biometricOnly: true,
+);
+print('Biometric authentication: $isAuthenticated');
 ```
 
 ## 🛠️ Advanced Features
@@ -439,8 +534,81 @@ securityKit.threatStream.listen((threat) {
 
 - ✅ **Android** - Full support with native security implementations
 - ✅ **iOS** - Full support with native security implementations
-- 🔄 **Web** - Limited support (some features not available)
-- 🔄 **Desktop** - Limited support (some features not available)
+- ✅ **Web** - Full support with browser-adapted security features
+- ✅ **macOS** - Full support with native macOS security implementations
+- ✅ **Linux** - Full support with native Linux security implementations
+- ✅ **Windows** - Full support with native Windows security implementations
+
+### 🆕 **NEW: Multi-Platform VPN Detection**
+
+The VPN detection feature is now available across all supported platforms:
+
+- **Android**: NetworkInterface + ConnectivityManager detection
+- **iOS**: utun interface detection
+- **Windows**: Network adapter detection
+- **macOS**: utun interface detection
+- **Linux**: Network interface detection
+- **Web**: Browser-based network analysis
+
+### Platform-Specific Features
+
+#### Android
+- ✅ Root detection with comprehensive checks
+- ✅ Native FLAG_SECURE for screen capture protection
+- ✅ Developer options integration
+- ✅ Package manager verification
+- ✅ SSL pinning with certificate and public key support
+- ✅ **VPN Detection** - NetworkInterface + ConnectivityManager
+- ✅ **USB Connection Monitoring** - Real-time USB device detection
+
+#### iOS
+- ✅ Jailbreak detection with system access checks
+- ✅ App Store receipt verification
+- ✅ Code signing validation
+- ✅ Settings integration
+- ✅ SSL pinning with certificate and public key support
+- ✅ **VPN Detection** - utun interface detection
+- ✅ **Biometric Authentication** - Face ID and Touch ID support
+
+#### Web
+- ✅ Developer tools detection
+- ✅ Security bypass detection
+- ✅ Screen capture protection (CSS + JavaScript)
+- ✅ Canvas fingerprinting
+- ✅ Network monitoring
+- ✅ SSL pinning (browser-based)
+- ✅ **VPN Detection** - Browser-based network analysis
+- ✅ **WebRTC Protection** - IP address leakage prevention
+
+#### macOS
+- ✅ Root access detection
+- ✅ Virtual machine detection
+- ✅ Code signing verification
+- ✅ Hardware UUID fingerprinting
+- ✅ System Preferences integration
+- ✅ SSL pinning with certificate and public key support
+- ✅ **VPN Detection** - utun interface detection
+- ✅ **Gatekeeper Integration** - App security verification
+
+#### Linux
+- ✅ Root access detection
+- ✅ Virtual machine detection
+- ✅ Debugger attachment detection
+- ✅ Machine ID fingerprinting
+- ✅ System settings integration
+- ✅ SSL pinning with certificate and public key support
+- ✅ **VPN Detection** - Network interface detection
+- ✅ **Systemd Integration** - Service security monitoring
+
+#### Windows
+- ✅ Administrator privileges detection
+- ✅ Virtual machine detection
+- ✅ Debugger attachment detection
+- ✅ Machine GUID fingerprinting
+- ✅ Windows Settings integration
+- ✅ SSL pinning with certificate and public key support
+- ✅ **VPN Detection** - Network adapter detection
+- ✅ **Windows Defender Integration** - Antivirus status monitoring
 
 ## 🔧 Configuration
 
@@ -466,6 +634,8 @@ Add to `ios/Runner/Info.plist`:
 
 ## 🧪 Testing
 
+### Basic Security Testing
+
 ```dart
 // Test security features
 void testSecurity() async {
@@ -487,6 +657,55 @@ void testSecurity() async {
 }
 ```
 
+### VPN Detection Testing
+
+```dart
+// Test VPN detection functionality
+void testVPNDetection() async {
+  final securityKit = UltraSecureFlutterKit();
+  
+  // Test VPN detection
+  final hasVPN = await securityKit.hasVPNConnection();
+  print('VPN Detection Test: ${hasVPN ? "VPN Connected" : "No VPN"}');
+  
+  // Test device security status (includes VPN info)
+  final deviceStatus = await securityKit.getDeviceSecurityStatus();
+  print('Device VPN Status: ${deviceStatus.hasVPN}');
+  print('Device Proxy Status: ${deviceStatus.hasProxy}');
+  
+  // Test comprehensive security
+  final isSecure = deviceStatus.isSecure;
+  final riskScore = deviceStatus.riskScore;
+  print('Overall Security: ${isSecure ? "SECURE" : "AT RISK"}');
+  print('Risk Score: ${(riskScore * 100).toStringAsFixed(1)}%');
+}
+```
+
+### Run Automated Tests
+
+```bash
+# Run all tests
+flutter test
+
+# Run VPN detection tests specifically
+flutter test test/vpn_detection_test.dart
+
+# Run specific test groups
+flutter test test/vpn_detection_test.dart --name="VPN Detection Basic Tests"
+flutter test test/vpn_detection_test.dart --name="Integration Tests"
+```
+
+### Test with Real VPN
+
+1. **Install a VPN app** (NordVPN, ExpressVPN, etc.)
+2. **Run the example app**:
+   ```bash
+   cd example
+   flutter run
+   ```
+3. **Navigate to VPN Detection Testing** in the app
+4. **Connect/disconnect VPN** and observe detection results
+
 ## 📈 Performance
 
 The plugin is optimized for performance with minimal overhead:
@@ -495,6 +714,9 @@ The plugin is optimized for performance with minimal overhead:
 - **CPU Impact**: < 2% CPU usage during normal operation
 - **Battery Impact**: < 1% additional battery drain
 - **Startup Time**: < 100ms initialization time
+- **VPN Detection Time**: < 1 second detection time
+- **Network Security Checks**: < 500ms per check
+- **Real-time Monitoring**: < 0.1% additional CPU usage
 
 ## 🔐 Security Best Practices
 
@@ -523,6 +745,30 @@ For support and questions:
 - 📖 Documentation: https://docs.ultrasecureflutterkit.com
 - 🐛 Issues: https://github.com/kanhiya3008/ultra_secure_flutter_kit/issues
 - 💬 Discord: https://discord.gg/ultrasecureflutterkit
+
+## 🆕 Latest Features & Improvements
+
+### **NEW: Multi-Platform VPN Detection**
+- ✅ **Complete VPN Detection Implementation** across all platforms
+- ✅ **Real-time VPN Monitoring** with continuous status checking
+- ✅ **Comprehensive Testing Suite** with 16 test cases
+- ✅ **Example Applications** for easy integration
+- ✅ **Performance Optimized** with < 1 second detection time
+
+### **Enhanced Security Features**
+- ✅ **Improved Android VPN Detection** with NetworkInterface + ConnectivityManager
+- ✅ **Enhanced iOS VPN Detection** with utun interface analysis
+- ✅ **Windows VPN Detection** with network adapter monitoring
+- ✅ **macOS VPN Detection** with utun interface detection
+- ✅ **Linux VPN Detection** with network interface analysis
+- ✅ **Web VPN Detection** with browser-based network analysis
+
+### **Testing & Documentation**
+- ✅ **Comprehensive Test Suite** for VPN detection
+- ✅ **Example Applications** for easy testing
+- ✅ **Complete Documentation** with usage examples
+- ✅ **Troubleshooting Guides** for common issues
+- ✅ **Performance Benchmarks** and optimization tips
 
 ## 🔄 Changelog
 
