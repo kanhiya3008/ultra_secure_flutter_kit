@@ -163,7 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _listenToSecurityEvents() {
     // Listen to security threats
     _securityKit.threatStream.listen((threat) {
-      if (threat is SecurityThreat && mounted) {
+      if (mounted) {
         setState(() {
           _threats.add(threat);
         });
@@ -180,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     // Listen to protection status changes
     _securityKit.statusStream.listen((status) {
-      if (status is ProtectionStatus && mounted) {
+      if (mounted) {
         setState(() {
           _protectionStatus = status;
         });

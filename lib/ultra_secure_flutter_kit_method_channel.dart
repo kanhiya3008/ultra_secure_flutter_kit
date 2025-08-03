@@ -71,10 +71,10 @@ class MethodChannelUltraSecureFlutterKit extends UltraSecureFlutterKitPlatform {
       final result = await methodChannel.invokeMethod<dynamic>(
         'getUsbConnectionStatus',
       );
-      
-      print('USB Connection Status Result Type: ${result.runtimeType}');
-      print('USB Connection Status Result: $result');
-      
+
+      debugPrint('USB Connection Status Result Type: ${result.runtimeType}');
+      debugPrint('USB Connection Status Result: $result');
+
       // Handle type conversion from platform-specific implementations
       if (result is Map) {
         // Convert the map to the expected type with proper type safety
@@ -83,14 +83,16 @@ class MethodChannelUltraSecureFlutterKit extends UltraSecureFlutterKitPlatform {
           final String stringKey = key is String ? key : key.toString();
           convertedMap[stringKey] = value;
         });
-        print('Converted Map: $convertedMap');
+
         return convertedMap;
       }
-      
-      print('Result is not a Map, returning default values');
-      return _getDefaultUsbStatus('Invalid response type: ${result.runtimeType}');
+
+      debugPrint('Result is not a Map, returning default values');
+      return _getDefaultUsbStatus(
+        'Invalid response type: ${result.runtimeType}',
+      );
     } catch (e) {
-      print('Error in getUsbConnectionStatus: $e');
+      debugPrint('Error in getUsbConnectionStatus: $e');
       return _getDefaultUsbStatus('Exception: $e');
     }
   }

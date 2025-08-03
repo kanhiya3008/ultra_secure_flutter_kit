@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 import 'network_error_handler.dart';
 
 /// Widget that monitors network connectivity and displays status
@@ -23,7 +22,8 @@ class NetworkConnectivityWidget extends StatefulWidget {
   });
 
   @override
-  State<NetworkConnectivityWidget> createState() => _NetworkConnectivityWidgetState();
+  State<NetworkConnectivityWidget> createState() =>
+      _NetworkConnectivityWidgetState();
 }
 
 class _NetworkConnectivityWidgetState extends State<NetworkConnectivityWidget> {
@@ -61,7 +61,7 @@ class _NetworkConnectivityWidgetState extends State<NetworkConnectivityWidget> {
 
     try {
       final hasConnection = await NetworkErrorHandler.hasInternetConnection();
-      
+
       if (mounted) {
         final previousConnection = _hasConnection;
         setState(() {
@@ -94,12 +94,7 @@ class _NetworkConnectivityWidgetState extends State<NetworkConnectivityWidget> {
       children: [
         widget.child,
         if (widget.showStatusBar && !_hasConnection)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: _buildStatusBar(),
-          ),
+          Positioned(top: 0, left: 0, right: 0, child: _buildStatusBar()),
         if (widget.showOfflineBanner && !_hasConnection)
           Positioned(
             bottom: 0,
@@ -129,11 +124,7 @@ class _NetworkConnectivityWidgetState extends State<NetworkConnectivityWidget> {
       color: Colors.red,
       child: Row(
         children: [
-          const Icon(
-            Icons.wifi_off,
-            color: Colors.white,
-            size: 20,
-          ),
+          const Icon(Icons.wifi_off, color: Colors.white, size: 20),
           const SizedBox(width: 8),
           const Expanded(
             child: Text(
@@ -192,7 +183,9 @@ class NetworkStatusIndicator extends StatelessWidget {
                   height: size * 0.6,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(_getStatusColor()),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _getStatusColor(),
+                    ),
                   ),
                 )
               : Icon(
@@ -221,11 +214,13 @@ class NetworkStatusIndicator extends StatelessWidget {
 
 /// Network connectivity monitor service
 class NetworkConnectivityMonitor {
-  static final NetworkConnectivityMonitor _instance = NetworkConnectivityMonitor._internal();
+  static final NetworkConnectivityMonitor _instance =
+      NetworkConnectivityMonitor._internal();
   factory NetworkConnectivityMonitor() => _instance;
   NetworkConnectivityMonitor._internal();
 
-  final StreamController<bool> _connectivityController = StreamController<bool>.broadcast();
+  final StreamController<bool> _connectivityController =
+      StreamController<bool>.broadcast();
   Stream<bool> get connectivityStream => _connectivityController.stream;
 
   Timer? _timer;
@@ -251,7 +246,7 @@ class NetworkConnectivityMonitor {
   Future<void> _checkConnectivity() async {
     try {
       final hasConnection = await NetworkErrorHandler.hasInternetConnection();
-      
+
       if (_hasConnection != hasConnection) {
         _hasConnection = hasConnection;
         _connectivityController.add(hasConnection);
@@ -273,7 +268,12 @@ class NetworkConnectivityMonitor {
 
 /// Network connectivity builder widget
 class NetworkConnectivityBuilder extends StatefulWidget {
-  final Widget Function(BuildContext context, bool hasConnection, bool isChecking) builder;
+  final Widget Function(
+    BuildContext context,
+    bool hasConnection,
+    bool isChecking,
+  )
+  builder;
   final Duration checkInterval;
   final Widget? loadingWidget;
 
@@ -285,10 +285,12 @@ class NetworkConnectivityBuilder extends StatefulWidget {
   });
 
   @override
-  State<NetworkConnectivityBuilder> createState() => _NetworkConnectivityBuilderState();
+  State<NetworkConnectivityBuilder> createState() =>
+      _NetworkConnectivityBuilderState();
 }
 
-class _NetworkConnectivityBuilderState extends State<NetworkConnectivityBuilder> {
+class _NetworkConnectivityBuilderState
+    extends State<NetworkConnectivityBuilder> {
   bool _hasConnection = true;
   bool _isChecking = true;
   StreamSubscription<bool>? _subscription;
@@ -308,9 +310,11 @@ class _NetworkConnectivityBuilderState extends State<NetworkConnectivityBuilder>
   Future<void> _initializeConnectivity() async {
     // Initial check
     await _checkConnectivity();
-    
+
     // Listen to connectivity changes
-    _subscription = NetworkConnectivityMonitor().connectivityStream.listen((hasConnection) {
+    _subscription = NetworkConnectivityMonitor().connectivityStream.listen((
+      hasConnection,
+    ) {
       if (mounted) {
         setState(() {
           _hasConnection = hasConnection;
@@ -344,7 +348,7 @@ class _NetworkConnectivityBuilderState extends State<NetworkConnectivityBuilder>
     if (_isChecking && widget.loadingWidget != null) {
       return widget.loadingWidget!;
     }
-    
+
     return widget.builder(context, _hasConnection, _isChecking);
   }
-} 
+}

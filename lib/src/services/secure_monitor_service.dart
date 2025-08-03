@@ -29,8 +29,8 @@ class SecureMonitorService {
   bool _isProtected = false;
 
   // Encryption keys
-  late Uint8List _encryptionKey;
-  late Uint8List _hmacKey;
+  // late Uint8List _encryptionKey;
+  // late Uint8List _hmacKey;
 
   // Secure storage
   final Map<String, Map<String, dynamic>> _secureStorage = {};
@@ -728,13 +728,13 @@ class SecureMonitorService {
 
   Future<void> _generateKeys() async {
     try {
-      final random = Random.secure();
-      _encryptionKey = Uint8List.fromList(
-        List.generate(32, (_) => random.nextInt(256)),
-      );
-      _hmacKey = Uint8List.fromList(
-        List.generate(32, (_) => random.nextInt(256)),
-      );
+      //final random = Random.secure();
+      // _encryptionKey = Uint8List.fromList(
+      //   List.generate(32, (_) => random.nextInt(256)),
+      //);
+      // _hmacKey = Uint8List.fromList(
+      //   List.generate(32, (_) => random.nextInt(256)),
+      // );
     } catch (e) {
       _logSecurityEvent('Key generation failed: $e', LogLevel.error);
       rethrow;

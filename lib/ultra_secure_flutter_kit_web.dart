@@ -9,7 +9,6 @@ import 'ultra_secure_flutter_kit_platform_interface.dart';
 /// Web implementation of UltraSecureFlutterKit
 class UltraSecureFlutterKitWeb extends UltraSecureFlutterKitPlatform {
   // Web-specific security features
-  static final Map<String, dynamic> _secureStorage = {};
   static final List<String> _pinnedCertificates = [];
   static final List<String> _pinnedPublicKeys = [];
   static bool _isScreenCaptureProtected = false;
@@ -512,23 +511,20 @@ class UltraSecureFlutterKitWeb extends UltraSecureFlutterKitPlatform {
   Future<Map<String, dynamic>> _getWebUsbConnectionStatus() async {
     try {
       // Web browsers have limited access to USB connection information
-      bool isConnectedToPower = false;
-      bool hasWebUsb = false;
-
       // Web browsers cannot reliably detect USB connection due to security restrictions
-      hasWebUsb = false;
-      isConnectedToPower = false;
+      const bool isConnectedToPower = false;
+      const bool hasWebUsb = false;
 
       final status = <String, dynamic>{
         'isAttached': isConnectedToPower,
-        'connectionType': isConnectedToPower ? 'charging' : 'none',
+        'connectionType': 'none',
         'isCharging': isConnectedToPower,
         'isDataTransfer': false, // Web browsers can't detect data transfer
         'isUsbCharging': isConnectedToPower,
         'isConnectedToComputer': false, // Web browsers can't detect this
         'isConnectedViaUsb': isConnectedToPower,
         'deviceCount': 0, // Web browsers can't enumerate USB devices
-        'powerSource': isConnectedToPower ? 'unknown' : 'none',
+        'powerSource': 'none',
         'webUsbAvailable': hasWebUsb,
         'platform': 'web',
         'limitations':

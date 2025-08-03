@@ -3,6 +3,7 @@ library ultra_secure_flutter_kit;
 export 'src/models/security_models.dart';
 export 'src/services/secure_monitor_service.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:local_auth/local_auth.dart' as local_auth;
 
 import 'ultra_secure_flutter_kit_platform_interface.dart';
@@ -65,7 +66,7 @@ class UltraSecureFlutterKit {
     } catch (e) {
       print('Failed to get device security status: $e');
       // Return a default status instead of throwing
-      return DeviceSecurityStatus(
+      return const DeviceSecurityStatus(
         isRooted: false,
         isJailbroken: false,
         isEmulator: false,
@@ -354,7 +355,7 @@ class UltraSecureFlutterKit {
             .disableScreenCaptureProtection();
       });
     } catch (e) {
-      print('Screen capture protection disable failed: $e');
+      debugPrint('Screen capture protection disable failed: $e');
       // Don't rethrow - this is not critical
     }
   }
@@ -367,7 +368,7 @@ class UltraSecureFlutterKit {
             .isScreenCaptureBlocked();
       });
     } catch (e) {
-      print('Screen capture blocking check failed: $e');
+      debugPrint('Screen capture blocking check failed: $e');
       return false;
     }
   }
@@ -380,7 +381,7 @@ class UltraSecureFlutterKit {
             .isUsbCableAttached();
       });
     } catch (e) {
-      print('USB cable detection failed: $e');
+      debugPrint('USB cable detection failed: $e');
       return false;
     }
   }
@@ -388,17 +389,17 @@ class UltraSecureFlutterKit {
   /// Get USB connection status details
   Future<Map<String, dynamic>> getUsbConnectionStatus() async {
     try {
-      print('Getting USB connection status...');
+      debugPrint('Getting USB connection status...');
       final result = await _runInBackground(() async {
         return await UltraSecureFlutterKitPlatform.instance
             .getUsbConnectionStatus();
       });
-      print('USB connection status result: $result');
-      print('USB connection status result type: ${result.runtimeType}');
+      debugPrint('USB connection status result: $result');
+      debugPrint('USB connection status result type: ${result.runtimeType}');
       return result;
     } catch (e) {
-      print('USB connection status retrieval failed: $e');
-      print('Error type: ${e.runtimeType}');
+      debugPrint('USB connection status retrieval failed: $e');
+      debugPrint('Error type: ${e.runtimeType}');
       return {
         'isAttached': false,
         'connectionType': 'none',
@@ -422,7 +423,7 @@ class UltraSecureFlutterKit {
         return await UltraSecureFlutterKitPlatform.instance.getAppSignature();
       });
     } catch (e) {
-      print('App signature retrieval failed: $e');
+      debugPrint('App signature retrieval failed: $e');
       return '';
     }
   }
@@ -435,7 +436,7 @@ class UltraSecureFlutterKit {
             .verifyAppIntegrity();
       });
     } catch (e) {
-      print('App integrity verification failed: $e');
+      debugPrint('App integrity verification failed: $e');
       return false;
     }
   }
@@ -448,7 +449,7 @@ class UltraSecureFlutterKit {
             .getDeviceFingerprint();
       });
     } catch (e) {
-      print('Device fingerprint retrieval failed: $e');
+      debugPrint('Device fingerprint retrieval failed: $e');
       return '';
     }
   }
@@ -460,7 +461,7 @@ class UltraSecureFlutterKit {
         return await UltraSecureFlutterKitPlatform.instance.enableSecureFlag();
       });
     } catch (e) {
-      print('Secure flag enablement failed: $e');
+      debugPrint('Secure flag enablement failed: $e');
       // Don't rethrow - this is not critical
     }
   }
@@ -473,7 +474,7 @@ class UltraSecureFlutterKit {
             .enableNetworkMonitoring();
       });
     } catch (e) {
-      print('Network monitoring enablement failed: $e');
+      debugPrint('Network monitoring enablement failed: $e');
       // Don't rethrow - this is not critical
     }
   }
@@ -486,7 +487,7 @@ class UltraSecureFlutterKit {
             .enableRealTimeMonitoring();
       });
     } catch (e) {
-      print('Real-time monitoring enablement failed: $e');
+      debugPrint('Real-time monitoring enablement failed: $e');
       // Don't rethrow - this is not critical
     }
   }
@@ -499,7 +500,7 @@ class UltraSecureFlutterKit {
             .preventReverseEngineering();
       });
     } catch (e) {
-      print('Reverse engineering prevention failed: $e');
+      debugPrint('Reverse engineering prevention failed: $e');
       // Don't rethrow - this is not critical
     }
   }
@@ -512,7 +513,7 @@ class UltraSecureFlutterKit {
             .applyAntiTampering();
       });
     } catch (e) {
-      print('Anti-tampering application failed: $e');
+      debugPrint('Anti-tampering application failed: $e');
       // Don't rethrow - this is not critical
     }
   }

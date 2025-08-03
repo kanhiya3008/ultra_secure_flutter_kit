@@ -633,7 +633,9 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: isUsbAttached ? Colors.orange.shade50 : Colors.green.shade50,
+                      color: isUsbAttached
+                          ? Colors.orange.shade50
+                          : Colors.green.shade50,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: isUsbAttached ? Colors.orange : Colors.green,
@@ -650,9 +652,13 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            isUsbAttached ? "⚠️ USB Cable Detected" : "✅ No USB Cable Detected",
+                            isUsbAttached
+                                ? "⚠️ USB Cable Detected"
+                                : "✅ No USB Cable Detected",
                             style: TextStyle(
-                              color: isUsbAttached ? Colors.orange.shade800 : Colors.green.shade800,
+                              color: isUsbAttached
+                                  ? Colors.orange.shade800
+                                  : Colors.green.shade800,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -662,14 +668,14 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Connection Details
                   const Text(
                     '📊 USB Connection Details:',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 8),
-                  
+
                   // Create a data table for better organization
                   Container(
                     decoration: BoxDecoration(
@@ -678,23 +684,56 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
                     ),
                     child: Column(
                       children: [
-                        _buildDetailRow('Connection Type', usbStatus['connectionType']?.toString() ?? 'unknown'),
-                        _buildDetailRow('Is Charging', usbStatus['isCharging']?.toString() ?? 'false'),
-                        _buildDetailRow('USB Charging', usbStatus['isUsbCharging']?.toString() ?? 'false'),
-                        _buildDetailRow('Data Transfer', usbStatus['isDataTransfer']?.toString() ?? 'false'),
-                        _buildDetailRow('Connected to Computer', usbStatus['isConnectedToComputer']?.toString() ?? 'false'),
-                        _buildDetailRow('Connected via USB', usbStatus['isConnectedViaUsb']?.toString() ?? 'false'),
-                        _buildDetailRow('Power Source', usbStatus['powerSource']?.toString() ?? 'unknown'),
-                        _buildDetailRow('Device Count', usbStatus['deviceCount']?.toString() ?? '0'),
+                        _buildDetailRow(
+                          'Connection Type',
+                          usbStatus['connectionType']?.toString() ?? 'unknown',
+                        ),
+                        _buildDetailRow(
+                          'Is Charging',
+                          usbStatus['isCharging']?.toString() ?? 'false',
+                        ),
+                        _buildDetailRow(
+                          'USB Charging',
+                          usbStatus['isUsbCharging']?.toString() ?? 'false',
+                        ),
+                        _buildDetailRow(
+                          'Data Transfer',
+                          usbStatus['isDataTransfer']?.toString() ?? 'false',
+                        ),
+                        _buildDetailRow(
+                          'Connected to Computer',
+                          usbStatus['isConnectedToComputer']?.toString() ??
+                              'false',
+                        ),
+                        _buildDetailRow(
+                          'Connected via USB',
+                          usbStatus['isConnectedViaUsb']?.toString() ?? 'false',
+                        ),
+                        _buildDetailRow(
+                          'Power Source',
+                          usbStatus['powerSource']?.toString() ?? 'unknown',
+                        ),
+                        _buildDetailRow(
+                          'Device Count',
+                          usbStatus['deviceCount']?.toString() ?? '0',
+                        ),
                         if (usbStatus['timestamp'] != null)
-                          _buildDetailRow('Timestamp', DateTime.fromMillisecondsSinceEpoch(usbStatus['timestamp'] as int).toString()),
+                          _buildDetailRow(
+                            'Timestamp',
+                            DateTime.fromMillisecondsSinceEpoch(
+                              usbStatus['timestamp'] as int,
+                            ).toString(),
+                          ),
                         if (usbStatus['error'] != null)
-                          _buildDetailRow('Error', usbStatus['error']?.toString() ?? ''),
+                          _buildDetailRow(
+                            'Error',
+                            usbStatus['error']?.toString() ?? '',
+                          ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Security Implications
                   const Text(
                     '🔒 Security Implications:',
@@ -711,16 +750,22 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('• USB connection can be used for data extraction'),
+                        const Text(
+                          '• USB connection can be used for data extraction',
+                        ),
                         const Text('• Charging-only cables are generally safe'),
-                        const Text('• Data transfer cables pose security risks'),
-                        const Text('• USB debugging enabled increases vulnerability'),
+                        const Text(
+                          '• Data transfer cables pose security risks',
+                        ),
+                        const Text(
+                          '• USB debugging enabled increases vulnerability',
+                        ),
                         const Text('• Mass storage mode allows file access'),
                       ],
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Recommendations
                   const Text(
                     '💡 Recommendations:',
@@ -793,9 +838,7 @@ class _AndroidSecurityExampleState extends State<AndroidSecurityExample> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: Colors.grey.shade200),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey.shade200)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
