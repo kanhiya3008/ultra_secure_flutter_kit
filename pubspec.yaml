@@ -1,0 +1,64 @@
+name: ultra_secure_flutter_kit
+description: >
+  A comprehensive Flutter security package providing enterprise-grade protection with real-time threat detection,
+  AI-assisted monitoring, root/jailbreak detection, secure storage, SSL pinning, and screen capture protection.
+  Features include device security checks, anti-reverse engineering, behavior monitoring, and configurable security modes.
+version: 1.0.0
+homepage: https://github.com/kanhiya3008/ultra_secure_flutter_kit
+repository: https://github.com/kanhiya3008/ultra_secure_flutter_kit
+issue_tracker: https://github.com/kanhiya3008/ultra_secure_flutter_kit/issues
+documentation: https://github.com/kanhiya3008/ultra_secure_flutter_kit#readme
+
+# Add author information
+author: Pankaj Kumar <pankaj@example.com>
+
+# Add topics for better discoverability
+topics:
+  - encryption
+  - ssl-pinning
+  - root-detection
+  - secure-storage
+  - threat-detection
+
+# Add keywords for search
+keywords:
+  - flutter
+  - security
+  - encryption
+  - authentication
+  - biometric
+  - ssl
+  - pinning
+  - root
+  - jailbreak
+  - emulator
+  - debugger
+  - tampering
+  - storage
+  - threat
+  - monitoring
+  - protection
+
+environment:
+  sdk: ^3.8.1
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.0.2
+  crypto: ^3.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.ultra_secure_flutter_kit
+        pluginClass: UltraSecureFlutterKitPlugin
+      ios:
+        pluginClass: UltraSecureFlutterKitPlugin
