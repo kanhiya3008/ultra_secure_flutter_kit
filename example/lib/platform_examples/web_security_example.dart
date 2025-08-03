@@ -345,25 +345,7 @@ class _WebSecurityExampleState extends State<WebSecurityExample> {
     }
   }
 
-  /// Test browser security features
-  Future<void> _testBrowserSecurity() async {
-    try {
-      print('Browser security test: Check device security status for details');
-    } catch (e) {
-      print('Browser security test failed: $e');
-    }
-  }
 
-  /// Test web storage security
-  Future<void> _testWebStorageSecurity() async {
-    try {
-      print(
-        'Web storage security test: Check device security status for details',
-      );
-    } catch (e) {
-      print('Web storage security test failed: $e');
-    }
-  }
 
   /// Test network security
   Future<Map<String, dynamic>> _testNetworkSecurity() async {

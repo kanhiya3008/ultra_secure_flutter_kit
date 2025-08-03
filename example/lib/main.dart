@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ultra_secure_flutter_kit/ultra_secure_flutter_kit.dart';
-import 'package:ultra_secure_flutter_kit_example/security_example.dart';
 import 'package:ultra_secure_flutter_kit_example/plugin_test.dart';
 import 'package:ultra_secure_flutter_kit_example/platform_examples/platform_examples_main.dart';
 import 'package:ultra_secure_flutter_kit_example/main_navigation.dart';
-import 'package:ultra_secure_flutter_kit_example/network_error_handler.dart';
 import 'package:ultra_secure_flutter_kit_example/network_connectivity_widget.dart';
 
 void main() {

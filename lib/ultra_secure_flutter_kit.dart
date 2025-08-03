@@ -3,7 +3,6 @@ library ultra_secure_flutter_kit;
 export 'src/models/security_models.dart';
 export 'src/services/secure_monitor_service.dart';
 
-
 import 'package:local_auth/local_auth.dart' as local_auth;
 
 import 'ultra_secure_flutter_kit_platform_interface.dart';

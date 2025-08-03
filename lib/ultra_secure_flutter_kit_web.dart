@@ -1,20 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
 import 'package:universal_html/html.dart' as universal_html;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ultra_secure_flutter_kit_platform_interface.dart';
 
 /// Web implementation of UltraSecureFlutterKit
 class UltraSecureFlutterKitWeb extends UltraSecureFlutterKitPlatform {
-  static const String _channelName = 'ultra_secure_flutter_kit';
-
   // Web-specific security features
-  static bool _isInitialized = false;
   static final Map<String, dynamic> _secureStorage = {};
   static final List<String> _pinnedCertificates = [];
   static final List<String> _pinnedPublicKeys = [];
